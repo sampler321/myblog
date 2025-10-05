@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loading...</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 1. Load BOTH fonts: a clean sans-serif and our mono font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style type="text/tailwindcss">
         @import url('https://unpkg.com/@tailwindcss/typography@0.5.13/src/index.css');
     </style>
@@ -16,6 +17,8 @@
             theme: {
                 extend: {
                     fontFamily: {
+                        // 2. Define our new hybrid font system
+                        sans: ['Inter', 'sans-serif'],
                         mono: ['"Roboto Mono"', 'monospace'],
                     },
                     colors: {
@@ -25,6 +28,7 @@
                         'szczur-accent': '#ef4444',
                         'szczur-hover': '#f87171',
                     },
+                    // 3. We are configuring the typography plugin itself to be more beautiful
                     typography: ({ theme }) => ({
                         invert: {
                             css: {
@@ -32,10 +36,14 @@
                                 '--tw-prose-headings': theme('colors.white'),
                                 '--tw-prose-links': theme('colors.szczur-accent'),
                                 '--tw-prose-bold': theme('colors.white'),
-                                '--tw-prose-code': theme('colors.white'),
-                                '--tw-prose-pre-code': theme('colors.szczur-text'),
+                                '--tw-prose-code': theme('colors.szczur-text'), // Mono text in code blocks
                                 '--tw-prose-pre-bg': theme('colors.black'),
-                                'line-height': '1.75',
+                                
+                                // Beautiful Blockquotes
+                                '--tw-prose-quotes': theme('colors.white'),
+                                '--tw-prose-quote-borders': theme('colors.szczur-accent'),
+                                'blockquote p:first-of-type::before': { content: 'none' },
+                                'blockquote p:last-of-type::after': { content: 'none' },
                             },
                         },
                     }),
@@ -44,51 +52,27 @@
         }
     </script>
     
-    <!-- =================================================================== -->
-    <!-- THE FIX IS HERE: GHOST EDITOR STYLE OVERRIDES -->
-    <!-- This block teaches our site how to style Ghost's special elements -->
-    <!-- =================================================================== -->
+    <!-- This is our dedicated override sheet for perfect spacing and details -->
     <style>
-        /* This ensures paragraphs have the nice spacing you see in the editor */
-        .prose p {
-            margin-top: 1.25em;
-            margin-bottom: 1.25em;
+        .prose h2, .prose h3 {
+            margin-top: 2.5em; /* More space above headings */
         }
-
-        /* This styles Ghost's special blockquote card beautifully */
-        .prose .kg-blockquote-card {
-            margin-top: 2.5em;
-            margin-bottom: 2.5em;
-            padding-left: 1.5rem;
-            border-left: 3px solid #ef4444; /* Your red accent color */
-        }
-        .prose .kg-blockquote-card blockquote {
-            margin: 0;
-            padding: 0;
-            border: none;
-            font-size: 1.25em; /* Makes the quote stand out */
+        .prose blockquote {
+            font-size: 1.1em;
             font-style: italic;
-            color: #fff; /* Brighter white for emphasis */
+            padding-left: 1.25rem; /* Indent the quote */
         }
-
-        /* This styles Ghost's horizontal rule card (<hr>) */
-        .prose .kg-hr-card hr {
-            margin-top: 3em;
-            margin-bottom: 3em;
-            border-color: #444; /* A subtle dark grey */
-        }
-
-        /* This styles the images you added via HTML card */
         .prose .kg-image-card img {
             width: 100%;
             margin-top: 2.5em;
             margin-bottom: 2.5em;
-            border-radius: 0.5rem; /* Nice rounded corners */
+            border-radius: 0.5rem;
         }
     </style>
 
 </head>
-<body class="font-mono bg-szczur-bg text-szczur-text text-lg leading-relaxed">
+<!-- 4. Use the clean sans-serif as the default font for the page -->
+<body class="font-sans bg-szczur-bg text-szczur-text text-lg leading-relaxed">
 
     <header class="border-b border-gray-800">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -104,7 +88,6 @@
             <h1 class="text-szczur-light">Loading...</h1>
         </div>
 
-        <!-- The key is adding "prose-lg" for that spacious, readable feel -->
         <div id="post-content" class="prose prose-invert prose-lg mt-8"></div>
     </article>
 
@@ -139,7 +122,7 @@
                         const postDate = new Date(post.published_at).toISOString().split('T')[0];
                         
                         postHeader.innerHTML = `
-                            <p class="text-sm text-szczur-light">[${postDate}]</p>
+                            <p class="text-sm text-szczur-light font-mono">[${postDate}]</p>
                             <h1 class="text-5xl font-bold tracking-tight mt-1">${post.title}</h1>
                         `;
 
