@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading Post...</title>
+    <title>Loading...</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
     <!-- Load the typography plugin's styles directly -->
     <style type="text/tailwindcss">
         @import url('https://unpkg.com/@tailwindcss/typography@0.5.13/src/index.css');
@@ -17,23 +17,33 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Lora', 'serif'],
+                        mono: ['Fira Code', 'monospace'],
                     },
-                    // Configure the "prose" class for the Medium look
+                    colors: {
+                        'szczur-bg': '#1a1a1a',
+                        'szczur-text': '#e0e0e0',
+                        'szczur-light': '#888888',
+                        'szczur-accent': '#ef4444',
+                        'szczur-hover': '#f87171',
+                    },
+                    // Configure the "prose" class for the dark mode aesthetic
                     typography: ({ theme }) => ({
-                        DEFAULT: {
+                        invert: {
                             css: {
-                                color: theme('colors.gray.800'),
-                                fontFamily: theme('fontFamily.serif'),
-                                'h1, h2, h3, h4': {
-                                    fontFamily: theme('fontFamily.sans'),
-                                    color: theme('colors.gray.900'),
-                                },
-                                a: {
-                                    color: theme('colors.indigo.600'),
-                                },
-                                code: { color: theme('colors.pink.600') },
+                                '--tw-prose-body': theme('colors.szczur-text'),
+                                '--tw-prose-headings': theme('colors.white'),
+                                '--tw-prose-lead': theme('colors.szczur-light'),
+                                '--tw-prose-links': theme('colors.szczur-accent'),
+                                '--tw-prose-bold': theme('colors.white'),
+                                '--tw-prose-counters': theme('colors.szczur-light'),
+                                '--tw-prose-bullets': theme('colors.gray.600'),
+                                '--tw-prose-hr': theme('colors.gray.700'),
+                                '--tw-prose-quotes': theme('colors.white'),
+                                '--tw-prose-quote-borders': theme('colors.gray.700'),
+                                '--tw-prose-captions': theme('colors.szczur-light'),
+                                '--tw-prose-code': theme('colors.white'),
+                                '--tw-prose-pre-code': theme('colors.szczur-text'),
+                                '--tw-prose-pre-bg': theme('colors.black'),
                             },
                         },
                     }),
@@ -41,37 +51,19 @@
             }
         }
     </script>
-    <style>
-        /* Simple styles for the progress bar */
-        #progress-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 4px;
-            background-color: #4f46e5; /* indigo-600 */
-            width: 0%;
-            z-index: 50;
-            transition: width 0.1s linear;
-        }
-    </style>
 </head>
-<body class="font-sans bg-white text-gray-800">
+<body class="font-mono bg-szczur-bg text-szczur-text">
 
-    <div id="progress-bar"></div>
-
-    <header class="border-b border-gray-200">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <a href="/" class="text-xl font-bold text-gray-900">My Blog</a>
-            <nav>
-                <!-- Nav links here -->
-            </nav>
+    <header class="border-b border-gray-800">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+             <a href="/" class="text-xl font-bold text-white hover:text-szczur-accent transition-colors duration-200">szczurwiel</a>
         </div>
     </header>
 
-    <!-- The "prose" class is the magic that styles your content from Ghost -->
-    <article id="post-container" class="prose lg:prose-lg max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <!-- The "prose prose-invert" classes are the magic -->
+    <article id="post-container" class="prose prose-invert max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div id="post-header">
-            <h1 class="text-gray-500">Loading...</h1>
+            <h1 class="text-szczur-light">Loading...</h1>
         </div>
         <div id="post-content" class="mt-8"></div>
     </article>
@@ -81,43 +73,31 @@
         const key = '73b1cb569557becdcfc9d10018';
         const postHeader = document.getElementById('post-header');
         const postContent = document.getElementById('post-content');
-        const progressBar = document.getElementById('progress-bar');
 
         const slug = new URLSearchParams(window.location.search).get('slug');
 
         if (slug) {
-            const apiUrl = `${url}/ghost/api/content/posts/slug/${slug}/?key=${key}&include=authors&formats=html`;
+            const apiUrl = `${url}/ghost/api/content/posts/slug/${slug}/?key=${key}&formats=html`;
             fetch(apiUrl)
                 .then(res => res.json())
                 .then(({ posts }) => {
                     const post = posts[0];
                     if (post) {
-                        document.title = post.title;
-                        const postDate = new Date(post.published_at).toLocaleDateString('en-US', {
-                            year: 'numeric', month: 'long', day: 'numeric'
-                        });
+                        document.title = `${post.title} - szczurwiel`;
+                        const postDate = new Date(post.published_at).toISOString().split('T')[0];
                         
-                        // Populate the header and content
                         postHeader.innerHTML = `
-                            <h1 class="!mb-2 !text-4xl !font-extrabold !tracking-tight">${post.title}</h1>
-                            <p class="!mt-4 text-lg text-gray-500">${post.primary_author.name} &middot; ${postDate}</p>
+                            <p class="text-sm text-szczur-light">[${postDate}]</p>
+                            <h1 class="!text-4xl !font-bold !tracking-tight !mt-1">${post.title}</h1>
                         `;
                         postContent.innerHTML = post.html;
                     } else {
-                        postHeader.innerHTML = '<h1>Post not found.</h1>';
+                        postHeader.innerHTML = '<h1>404 :: Post Not Found</h1>';
                     }
                 });
         } else {
-            postHeader.innerHTML = '<h1>No post specified.</h1>';
+            postHeader.innerHTML = '<h1>Error :: No Post Specified</h1>';
         }
-
-        // Progress bar logic
-        window.addEventListener('scroll', () => {
-            const scrollTop = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollPercent = (scrollTop / docHeight) * 100;
-            progressBar.style.width = scrollPercent + '%';
-        });
     </script>
 </body>
 </html>
