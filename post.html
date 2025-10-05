@@ -46,34 +46,36 @@
     </script>
     
     <style>
+        /* THE FIX: Base font-size is now smaller (16px), and line-height is tighter */
         .prose {
-            font-size: 1.125rem;
-            line-height: 1.8;
+            font-size: 1rem;
+            line-height: 1.75;
         }
         .prose > * + * {
-            margin-top: 1.5em;
+            margin-top: 1.25em;
         }
         .prose h2, .prose h3 {
-            margin-top: 2.5em;
+            margin-top: 2em;
         }
         .prose blockquote {
             border-left-width: 4px;
-            padding-left: 1.5rem;
-            font-size: 1.1em;
+            padding-left: 1rem;
+            font-size: 1.125em;
             font-style: italic;
             font-weight: 400;
             color: #b0b0b0;
         }
         .prose .kg-image-card img {
             width: 100%;
-            margin-top: 2.5em;
-            margin-bottom: 2.5em;
+            margin-top: 2em;
+            margin-bottom: 2em;
             border-radius: 0.5rem;
         }
     </style>
 
 </head>
-<body class="font-mono bg-szczur-bg text-szczur-text">
+<!-- THE FIX: Changed text-lg to text-base -->
+<body class="font-mono bg-szczur-bg text-szczur-text text-base leading-relaxed">
 
     <header class="border-b border-gray-800 bg-szczur-bg">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -89,10 +91,10 @@
             <h1 class="text-szczur-light">Loading...</h1>
         </header>
 
-        <div id="post-content" class="prose prose-invert prose-lg mt-12 max-w-3xl mx-auto"></div>
+        <!-- THE FIX: Removed prose-lg, it will now use the smaller base styles -->
+        <div id="post-content" class="prose prose-invert mt-12 max-w-3xl mx-auto"></div>
     </article>
     
-    <!-- THE FIX IS HERE: The footer is now added to the post page -->
     <footer class="text-center py-8 text-szczur-light text-sm border-t border-gray-800 mt-8">
         &copy; 2024 szczurwiel
     </footer>
