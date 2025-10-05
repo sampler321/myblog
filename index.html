@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { mono: ['"IBM Plex Mono"', 'monospace'] } } }
+        }
+    </script>
+</head>
+
+<body class="bg-slate-900 font-mono text-slate-300">
+
+    <main class="max-w-3xl mx-auto py-12 px-4">
+        <!-- This is your real title now -->
+        <h1 class="text-4xl font-bold text-white">My Blog</h1>
+
+        <!-- The post list will appear here, just like before -->
+        <div id="post-list" class="mt-12 space-y-8">
+            <p class="text-slate-500">Loading...</p>
+        </div>
+    </main>
+
+    <script>
+        const postList = document.getElementById('post-list');
+
+        const url = 'https://tunneling-falcon.pikapod.net';
+        const key = '73b1cb569557becdcfc9d10018';
+        const apiUrl = `${url}/ghost/api/content/posts/?key=${key}&limit=5`;
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                postList.innerHTML = ''; // Clear the "Loading..." message
+                data.posts.forEach(post => {
+                    const postElement = `
+                        <article>
+                            <h2 class="text-2xl font-bold text-white hover:text-green-400">
+                                <!-- This link now goes to your real post.html page -->
+                                <a href="/post.html?slug=${post.slug}">${post.title}</a>
+                            </h2>
+                        </article>
+                    `;
+                    postList.innerHTML += postElement;
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching posts:', error);
+                postList.innerHTML = `<p class="text-red-500">Error loading posts.</p>`;
+            });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Post...</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            // We are adding the typography plugin here to make your post content look good.
+            plugins: [tailwind.typography],
+            theme: {
+                extend: {
+                    fontFamily: { mono: ['"IBM Plex Mono"', 'monospace'] },
+                    // This is the "hackerman" styling for your blog post content.
+                    typography: ({ theme }) => ({
+                        invert: {
+                            css: {
+                                '--tw-prose-body': theme('colors.slate[300]'),
+                                '--tw-prose-headings': theme('colors.white'),
+                                '--tw-prose-links': theme('colors.green[400]'),
+                                '--tw-prose-bold': theme('colors.slate[100]'),
+                                '--tw-prose-code': theme('colors.slate[300]'),
+                                '--tw-prose-pre-bg': theme('colors.slate[800]'),
+                                '--tw-prose-hr': theme('colors.slate[700]'),
+                                '--tw-prose-quotes': theme('colors.slate[200]'),
+                            }
+                        }
+                    }),
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-slate-900 font-mono text-slate-300">
+
+    <!-- The "prose" and "prose-invert" classes are the magic for your content -->
+    <main id="post-content" class="prose prose-invert max-w-3xl mx-auto py-12 px-4">
+        <h1 class="text-slate-500">Loading...</h1>
+    </main>
+
+    <script>
+        const url = 'https://tunneling-falcon.pikapod.net';
+        const key = '73b1cb569557becdcfc9d10018';
+        const postContent = document.getElementById('post-content');
+
+        const slug = new URLSearchParams(window.location.search).get('slug');
+
+        if (slug) {
+            const apiUrl = `${url}/ghost/api/content/posts/slug/${slug}/?key=${key}&formats=html`;
+
+            fetch(apiUrl)
+                .then(res => res.json())
+                .then(({ posts }) => {
+                    const post = posts[0];
+                    if (post) {
+                        document.title = post.title;
+                        postContent.innerHTML = `<h1>${post.title}</h1>${post.html}`;
+                    } else {
+                        postContent.innerHTML = '<h1>Post not found.</h1>';
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    postContent.innerHTML = '<h1>Error loading post.</h1>';
+                });
+        } else {
+            postContent.innerHTML = '<h1>No post specified.</h1>';
+        }
+    </script>
+</body>
+
+</html>
