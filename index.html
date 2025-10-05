@@ -35,7 +35,6 @@
         }
     </style>
 </head>
-<!-- THE FIX: Changed text-lg to text-base for a smaller default font size -->
 <body class="font-mono bg-szczur-bg text-szczur-text text-base leading-relaxed">
 
     <header class="border-b border-gray-800 bg-szczur-bg">
@@ -79,18 +78,16 @@
                             <h2 class="text-3xl font-bold text-white tracking-tight">
                                 <a href="post.html?slug=${post.slug}" class="hover:text-szczur-accent transition-colors duration-200">
                                     ${post.title}
-                                a>
+                                </a> <!-- THE FIX IS HERE -->
                             </h2>
                             <div class="mt-4 flex items-center space-x-4 text-szczur-light text-sm">
                                 <span>by szczurwiel</span>
                                 <span class="text-gray-600">&middot;</span>
                                 <time datetime="${post.published_at}">${postDate}</time>
                             </div>
-                            <!-- THE FIX: Changed text-lg to text-base for the excerpt -->
                             <p class="mt-4 text-base text-szczur-text leading-relaxed truncate-3-lines">
                                 ${post.excerpt}
                             </p>
-                            <!-- THE FIX: Changed text-lg to text-base for the link -->
                             <a href="post.html?slug=${post.slug}" class="mt-4 inline-block text-szczur-accent font-semibold text-base hover:underline">
                                 read ->
                             </a>
