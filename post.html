@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale-क्रम=1.0">
     <title>Loading...</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 1. Load Roboto Mono Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -17,7 +16,6 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        // 2. Set Roboto Mono as the font
                         mono: ['"Roboto Mono"', 'monospace'],
                     },
                     colors: {
@@ -37,7 +35,7 @@
                                 '--tw-prose-code': theme('colors.white'),
                                 '--tw-prose-pre-code': theme('colors.szczur-text'),
                                 '--tw-prose-pre-bg': theme('colors.black'),
-                                'line-height': '1.75', // Improved line spacing for readability
+                                'line-height': '1.75',
                             },
                         },
                     }),
@@ -45,6 +43,18 @@
             }
         }
     </script>
+    
+    <!-- THE FIX IS HERE: This style block targets the specific classes Ghost adds. -->
+    <style>
+        /* Force Ghost's image cards to look good inside our layout */
+        .prose .kg-image-card img {
+            width: 100%;
+            margin-top: 2em;
+            margin-bottom: 2em;
+            border-radius: 0.5rem; /* A nice rounded corner */
+        }
+    </style>
+
 </head>
 <body class="font-mono bg-szczur-bg text-szczur-text text-lg leading-relaxed">
 
