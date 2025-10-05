@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loading...</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 1. Load VT323 Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style type="text/tailwindcss">
         @import url('https://unpkg.com/@tailwindcss/typography@0.5.13/src/index.css');
     </style>
@@ -16,7 +17,8 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        mono: ['Fira Code', 'monospace'],
+                        // 2. Set VT323 as the font
+                        mono: ['VT323', 'monospace'],
                     },
                     colors: {
                         'szczur-bg': '#1a1a1a',
@@ -43,28 +45,23 @@
         }
     </script>
 </head>
-<body class="font-mono bg-szczur-bg text-szczur-text">
+<body class="font-mono bg-szczur-bg text-szczur-text text-lg">
 
     <header class="border-b border-gray-800">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-             <a href="/" class="text-xl font-bold text-white hover:text-szczur-accent transition-colors duration-200">szczurwiel</a>
+             <a href="/" class="text-2xl font-bold text-white hover:text-szczur-accent transition-colors duration-200">szczurwiel</a>
         </div>
     </header>
 
     <article class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         
-        <!-- THE FIX IS HERE: The containers have been reordered. Image is first. -->
-        
-        <!-- This is the container for our Feature Image -->
         <div id="feature-image-container"></div>
 
-        <!-- This is the container for the title and date -->
         <div id="post-header" class="mt-8">
             <h1 class="text-szczur-light">Loading...</h1>
         </div>
 
-        <!-- The "prose" and "prose-invert" classes are for the main content -->
-        <div id="post-content" class="prose prose-invert mt-8"></div>
+        <div id="post-content" class="prose prose-invert prose-lg mt-8"></div>
     </article>
 
     <script>
@@ -84,11 +81,10 @@
                     if (post) {
                         document.title = `${post.title} - szczurwiel`;
                         
-                        // Check if a feature_image exists and display it
                         if (post.feature_image) {
                             featureImageContainer.innerHTML = `
                                 <img 
-                                    class="w-full rounded-lg" 
+                                    class="w-full" 
                                     src="${post.feature_image}" 
                                     alt="${post.feature_image_alt || post.title}" 
                                 />
@@ -97,13 +93,11 @@
                         
                         const postDate = new Date(post.published_at).toISOString().split('T')[0];
                         
-                        // Populate the header
                         postHeader.innerHTML = `
                             <p class="text-sm text-szczur-light">[${postDate}]</p>
-                            <h1 class="text-4xl font-bold tracking-tight mt-1">${post.title}</h1>
+                            <h1 class="text-5xl font-bold tracking-tight mt-1">${post.title}</h1>
                         `;
 
-                        // Correct the paths for images inside the post content
                         const correctedHtml = post.html.replaceAll('src="/content/images/', `src="${url}/content/images/`);
                         postContent.innerHTML = correctedHtml;
                         
