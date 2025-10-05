@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loading...</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 1. Load BOTH fonts: a clean sans-serif and our mono font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style type="text/tailwindcss">
         @import url('https://unpkg.com/@tailwindcss/typography@0.5.13/src/index.css');
     </style>
@@ -17,18 +16,16 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        // 2. Define our new hybrid font system
-                        sans: ['Inter', 'sans-serif'],
                         mono: ['"Roboto Mono"', 'monospace'],
                     },
                     colors: {
-                        'szczur-bg': '#1a1a1a',
-                        'szczur-text': '#e0e0e0',
-                        'szczur-light': '#888888',
-                        'szczur-accent': '#ef4444',
-                        'szczur-hover': '#f87171',
+                        'szczur-bg': '#121212',      // A slightly softer black
+                        'szczur-surface': '#1e1e1e', // For cards and headers
+                        'szczur-text': '#d1d1d1',     // Softer white for readability
+                        'szczur-light': '#999999',    // For metadata
+                        'szczur-accent': '#ff4757',   // A more vibrant red
                     },
-                    // 3. We are configuring the typography plugin itself to be more beautiful
+                    // We are completely overriding the typography to be beautiful
                     typography: ({ theme }) => ({
                         invert: {
                             css: {
@@ -36,10 +33,8 @@
                                 '--tw-prose-headings': theme('colors.white'),
                                 '--tw-prose-links': theme('colors.szczur-accent'),
                                 '--tw-prose-bold': theme('colors.white'),
-                                '--tw-prose-code': theme('colors.szczur-text'), // Mono text in code blocks
+                                '--tw-prose-code': theme('colors.szczur-text'),
                                 '--tw-prose-pre-bg': theme('colors.black'),
-                                
-                                // Beautiful Blockquotes
                                 '--tw-prose-quotes': theme('colors.white'),
                                 '--tw-prose-quote-borders': theme('colors.szczur-accent'),
                                 'blockquote p:first-of-type::before': { content: 'none' },
@@ -52,16 +47,35 @@
         }
     </script>
     
-    <!-- This is our dedicated override sheet for perfect spacing and details -->
+    <!-- =================================================================== -->
+    <!-- THE REAL THEME: Professional Typography, Spacing, and Quotes -->
+    <!-- =================================================================== -->
     <style>
-        .prose h2, .prose h3 {
-            margin-top: 2.5em; /* More space above headings */
+        /* Base readability improvements */
+        .prose {
+            font-size: 1.125rem; /* 18px for comfortable reading */
+            line-height: 1.8;
         }
+
+        /* Create beautiful, consistent spacing (vertical rhythm) */
+        .prose > * + * {
+            margin-top: 1.5em;
+        }
+        .prose h2, .prose h3 {
+            margin-top: 2.5em;
+        }
+
+        /* The Beautiful Blockquote, inspired by your example */
         .prose blockquote {
+            border-left-width: 4px;
+            padding-left: 1.5rem;
             font-size: 1.1em;
             font-style: italic;
-            padding-left: 1.25rem; /* Indent the quote */
+            font-weight: 400;
+            color: #b0b0b0; /* Slightly lighter text to stand out */
         }
+
+        /* Style Ghost's specific image cards */
         .prose .kg-image-card img {
             width: 100%;
             margin-top: 2.5em;
@@ -71,28 +85,28 @@
     </style>
 
 </head>
-<!-- 4. Use the clean sans-serif as the default font for the page -->
-<body class="font-sans bg-szczur-bg text-szczur-text text-lg leading-relaxed">
+<body class="font-mono bg-szczur-bg text-szczur-text">
 
-    <header class="border-b border-gray-800">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <header class="border-b border-gray-800 bg-szczur-surface">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
              <a href="/" class="text-2xl font-bold text-white hover:text-szczur-accent transition-colors duration-200 tracking-wider">szczurwiel</a>
         </div>
     </header>
 
-    <article class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <article class="max-w-4xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
         
         <div id="feature-image-container"></div>
 
-        <div id="post-header" class="mt-8">
+        <!-- This is a new, structured header for metadata -->
+        <header id="post-header" class="mt-8 text-center max-w-3xl mx-auto">
             <h1 class="text-szczur-light">Loading...</h1>
-        </div>
+        </header>
 
-        <div id="post-content" class="prose prose-invert prose-lg mt-8"></div>
+        <!-- The content is now wrapped in its own container for better control -->
+        <div id="post-content" class="prose prose-invert prose-lg mt-12 max-w-3xl mx-auto"></div>
     </article>
 
     <script>
-        // The JavaScript is unchanged and correct.
         const url = 'https://tunneling-falcon.pikapod.net';
         const key = '73b1cb569557becdcfc9d10018';
         const postHeader = document.getElementById('post-header');
@@ -101,7 +115,8 @@
         const slug = new URLSearchParams(window.location.search).get('slug');
 
         if (slug) {
-            const apiUrl = `${url}/ghost/api/content/posts/slug/${slug}/?key=${key}&formats=html`;
+            // We now ask for the author's data
+            const apiUrl = `${url}/ghost/api/content/posts/slug/${slug}/?key=${key}&include=authors&formats=html`;
             fetch(apiUrl)
                 .then(res => res.json())
                 .then(({ posts }) => {
@@ -112,18 +127,25 @@
                         if (post.feature_image) {
                             featureImageContainer.innerHTML = `
                                 <img 
-                                    class="w-full rounded-md" 
+                                    class="w-full rounded-lg" 
                                     src="${post.feature_image}" 
                                     alt="${post.feature_image_alt || post.title}" 
                                 />
                             `;
                         }
                         
-                        const postDate = new Date(post.published_at).toISOString().split('T')[0];
+                        const postDate = new Date(post.published_at).toLocaleDateString('en-US', {
+                            year: 'numeric', month: 'long', day: 'numeric'
+                        });
                         
+                        // Populate the new, structured header
                         postHeader.innerHTML = `
-                            <p class="text-sm text-szczur-light font-mono">[${postDate}]</p>
-                            <h1 class="text-5xl font-bold tracking-tight mt-1">${post.title}</h1>
+                            <h1 class="text-5xl font-bold text-white tracking-tight">${post.title}</h1>
+                            <div class="mt-6 flex items-center justify-center space-x-4 text-szczur-light">
+                                <span>By ${post.primary_author.name}</span>
+                                <span class="text-gray-600">&middot;</span>
+                                <time datetime="${post.published_at}">${postDate}</time>
+                            </div>
                         `;
 
                         const correctedHtml = post.html.replaceAll('src="/content/images/', `src="${url}/content/images/`);
