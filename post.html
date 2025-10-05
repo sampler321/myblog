@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Load the typography plugin's styles directly -->
     <style type="text/tailwindcss">
         @import url('https://unpkg.com/@tailwindcss/typography@0.5.13/src/index.css');
     </style>
@@ -26,21 +25,13 @@
                         'szczur-accent': '#ef4444',
                         'szczur-hover': '#f87171',
                     },
-                    // Configure the "prose" class for the dark mode aesthetic
                     typography: ({ theme }) => ({
                         invert: {
                             css: {
                                 '--tw-prose-body': theme('colors.szczur-text'),
                                 '--tw-prose-headings': theme('colors.white'),
-                                '--tw-prose-lead': theme('colors.szczur-light'),
                                 '--tw-prose-links': theme('colors.szczur-accent'),
                                 '--tw-prose-bold': theme('colors.white'),
-                                '--tw-prose-counters': theme('colors.szczur-light'),
-                                '--tw-prose-bullets': theme('colors.gray.600'),
-                                '--tw-prose-hr': theme('colors.gray.700'),
-                                '--tw-prose-quotes': theme('colors.white'),
-                                '--tw-prose-quote-borders': theme('colors.gray.700'),
-                                '--tw-prose-captions': theme('colors.szczur-light'),
                                 '--tw-prose-code': theme('colors.white'),
                                 '--tw-prose-pre-code': theme('colors.szczur-text'),
                                 '--tw-prose-pre-bg': theme('colors.black'),
@@ -60,20 +51,28 @@
         </div>
     </header>
 
-    <!-- The "prose prose-invert" classes are the magic -->
-    <article id="post-container" class="prose prose-invert max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div id="post-header">
+    <article class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        
+        <!-- THE FIX IS HERE: The containers have been reordered. Image is first. -->
+        
+        <!-- This is the container for our Feature Image -->
+        <div id="feature-image-container"></div>
+
+        <!-- This is the container for the title and date -->
+        <div id="post-header" class="mt-8">
             <h1 class="text-szczur-light">Loading...</h1>
         </div>
-        <div id="post-content" class="mt-8"></div>
+
+        <!-- The "prose" and "prose-invert" classes are for the main content -->
+        <div id="post-content" class="prose prose-invert mt-8"></div>
     </article>
 
     <script>
         const url = 'https://tunneling-falcon.pikapod.net';
         const key = '73b1cb569557becdcfc9d10018';
         const postHeader = document.getElementById('post-header');
+        const featureImageContainer = document.getElementById('feature-image-container');
         const postContent = document.getElementById('post-content');
-
         const slug = new URLSearchParams(window.location.search).get('slug');
 
         if (slug) {
@@ -84,13 +83,30 @@
                     const post = posts[0];
                     if (post) {
                         document.title = `${post.title} - szczurwiel`;
+                        
+                        // Check if a feature_image exists and display it
+                        if (post.feature_image) {
+                            featureImageContainer.innerHTML = `
+                                <img 
+                                    class="w-full rounded-lg" 
+                                    src="${post.feature_image}" 
+                                    alt="${post.feature_image_alt || post.title}" 
+                                />
+                            `;
+                        }
+                        
                         const postDate = new Date(post.published_at).toISOString().split('T')[0];
                         
+                        // Populate the header
                         postHeader.innerHTML = `
                             <p class="text-sm text-szczur-light">[${postDate}]</p>
-                            <h1 class="!text-4xl !font-bold !tracking-tight !mt-1">${post.title}</h1>
+                            <h1 class="text-4xl font-bold tracking-tight mt-1">${post.title}</h1>
                         `;
-                        postContent.innerHTML = post.html;
+
+                        // Correct the paths for images inside the post content
+                        const correctedHtml = post.html.replaceAll('src="/content/images/', `src="${url}/content/images/`);
+                        postContent.innerHTML = correctedHtml;
+                        
                     } else {
                         postHeader.innerHTML = '<h1>404 :: Post Not Found</h1>';
                     }
