@@ -70,12 +70,6 @@
             margin-bottom: 2em;
             border-radius: 0.5rem;
         }
-        /* ADDED: Simple styling to ensure the audio player has breathing room */
-        .prose audio {
-            width: 100%;
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-        }
     </style>
 
 </head>
@@ -119,7 +113,6 @@
                     if (post) {
                         document.title = `${post.title} - szczurwiel`;
                         
-                        // Handle Feature Image
                         if (post.feature_image) {
                             featureImageContainer.innerHTML = `
                                 <img 
@@ -130,7 +123,6 @@
                             `;
                         }
                         
-                        // Handle Header
                         const postDate = new Date(post.published_at).toLocaleDateString('en-US', {
                             year: 'numeric', month: 'long', day: 'numeric'
                         });
@@ -144,33 +136,28 @@
                             </div>
                         `;
 
-                        // 1. Fix Image Paths (Strings)
-                        let correctedHtml = post.html.replaceAll('src="/content/images/', `src="${url}/content/images/`);
+                        // --- FIX START ---
+                        let correctedHtml = post.html;
 
-                        // 2. Inject Content
-                        postContent.innerHTML = correctedHtml;
-
-                        // 3. FORCE FIX FOR AUDIO (The real fix)
-                        // We do this after injection so we can use DOM manipulation, which is safer than string replace
-                        const audioElements = postContent.querySelectorAll('audio');
+                        // 1. Fix Image Paths
+                        correctedHtml = correctedHtml.replaceAll('src="/content/images/', `src="${url}/content/images/`);
                         
-                        audioElements.forEach(audio => {
-                            // Enable native browser controls (Play/Pause/Volume)
-                            audio.setAttribute('controls', 'true');
-                            
-                            // Ensure the audio SRC points to the Ghost server, not Netlify
-                            const currentSrc = audio.getAttribute('src');
-                            if (currentSrc && currentSrc.startsWith('/')) {
-                                audio.setAttribute('src', url + currentSrc);
-                            }
-                        });
+                        // 2. Fix Audio Paths
+                        correctedHtml = correctedHtml.replaceAll('src="/content/media/', `src="${url}/content/media/`);
+
+                        // 3. Force Audio Controls (The Brute Force Fix)
+                        // This adds 'controls' and a width style to EVERY audio tag found in the content
+                        correctedHtml = correctedHtml.replaceAll('<audio', '<audio controls style="width: 100%; margin: 20px 0;"');
+
+                        postContent.innerHTML = correctedHtml;
+                        // --- FIX END ---
                         
                     } else {
                         postHeader.innerHTML = '<h1>404 :: Post Not Found</h1>';
                     }
                 })
                 .catch(err => {
-                    console.error(err);
+                    console.error('Error loading post:', err);
                     postHeader.innerHTML = '<h1>Error :: Could not load post</h1>';
                 });
         } else {
