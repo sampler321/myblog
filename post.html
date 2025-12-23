@@ -138,8 +138,7 @@
                             </div>
                         `;
 
-                        // 3. PROCESS CONTENT (The Cleanup)
-                        // Create a temporary parser to manipulate the HTML structure cleanly
+                        // 3. PROCESS CONTENT (Cleanup & Parsing)
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(post.html, 'text/html');
 
@@ -152,7 +151,6 @@
                         });
 
                         // B. FIX AUDIO (Clean: Title -> Player -> Gap)
-                        // We search for the Ghost audio container (.kg-audio-card)
                         doc.querySelectorAll('.kg-audio-card').forEach(card => {
                             // Extract Title
                             const titleEl = card.querySelector('.kg-audio-title');
@@ -175,6 +173,7 @@
 
                             const newAudio = document.createElement('audio');
                             newAudio.controls = true;
+                            newAudio.className = 'post-audio-player'; // Added class for easier selection later
                             newAudio.style.width = '100%';
                             newAudio.src = audioSrc;
 
@@ -188,6 +187,20 @@
 
                         // Inject clean HTML
                         postContent.innerHTML = doc.body.innerHTML;
+
+                        // 4. ENABLE AUTO-PLAY NEXT (Album Mode)
+                        // We must select them AFTER they are injected into the DOM
+                        const audioPlayers = postContent.querySelectorAll('audio');
+                        
+                        audioPlayers.forEach((player, index) => {
+                            player.addEventListener('ended', () => {
+                                // Check if there is a next player in the list
+                                if (index + 1 < audioPlayers.length) {
+                                    const nextPlayer = audioPlayers[index + 1];
+                                    nextPlayer.play();
+                                }
+                            });
+                        });
                         
                     } else {
                         postHeader.innerHTML = '<h1>404 :: Post Not Found</h1>';
