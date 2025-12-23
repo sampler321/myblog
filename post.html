@@ -74,7 +74,6 @@
     </style>
 
 </head>
-<!-- THE FIX: Changed text-lg to text-base -->
 <body class="font-mono bg-szczur-bg text-szczur-text text-base leading-relaxed">
 
     <header class="border-b border-gray-800 bg-szczur-bg">
@@ -91,7 +90,6 @@
             <h1 class="text-szczur-light">Loading...</h1>
         </header>
 
-        <!-- THE FIX: Removed prose-lg, it will now use the smaller base styles -->
         <div id="post-content" class="prose prose-invert mt-12 max-w-3xl mx-auto"></div>
     </article>
     
@@ -139,7 +137,11 @@
                             </div>
                         `;
 
-                        const correctedHtml = post.html.replaceAll('src="/content/images/', `src="${url}/content/images/`);
+                        // UPDATED: Now also fixes paths for AUDIO files (/content/media/)
+                        const correctedHtml = post.html
+                            .replaceAll('src="/content/images/', `src="${url}/content/images/`)
+                            .replaceAll('src="/content/media/', `src="${url}/content/media/`);
+
                         postContent.innerHTML = correctedHtml;
                         
                     } else {
