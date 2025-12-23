@@ -113,6 +113,7 @@
                     if (post) {
                         document.title = `${post.title} - szczurwiel`;
                         
+                        // 1. Feature Image
                         if (post.feature_image) {
                             featureImageContainer.innerHTML = `
                                 <img 
@@ -123,6 +124,7 @@
                             `;
                         }
                         
+                        // 2. Header Data
                         const postDate = new Date(post.published_at).toLocaleDateString('en-US', {
                             year: 'numeric', month: 'long', day: 'numeric'
                         });
@@ -136,28 +138,63 @@
                             </div>
                         `;
 
-                        // --- FIX START ---
-                        let correctedHtml = post.html;
+                        // 3. PROCESS CONTENT (The Cleanup)
+                        // Create a temporary parser to manipulate the HTML structure cleanly
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(post.html, 'text/html');
 
-                        // 1. Fix Image Paths
-                        correctedHtml = correctedHtml.replaceAll('src="/content/images/', `src="${url}/content/images/`);
-                        
-                        // 2. Fix Audio Paths
-                        correctedHtml = correctedHtml.replaceAll('src="/content/media/', `src="${url}/content/media/`);
+                        // A. Fix Images
+                        doc.querySelectorAll('img').forEach(img => {
+                            const src = img.getAttribute('src');
+                            if (src && src.startsWith('/content/images/')) {
+                                img.setAttribute('src', url + src);
+                            }
+                        });
 
-                        // 3. Force Audio Controls (The Brute Force Fix)
-                        // This adds 'controls' and a width style to EVERY audio tag found in the content
-                        correctedHtml = correctedHtml.replaceAll('<audio', '<audio controls style="width: 100%; margin: 20px 0;"');
+                        // B. FIX AUDIO (Clean: Title -> Player -> Gap)
+                        // We search for the Ghost audio container (.kg-audio-card)
+                        doc.querySelectorAll('.kg-audio-card').forEach(card => {
+                            // Extract Title
+                            const titleEl = card.querySelector('.kg-audio-title');
+                            const titleText = titleEl ? titleEl.textContent : 'Audio Track';
+                            
+                            // Extract Audio URL
+                            const audioEl = card.querySelector('audio');
+                            let audioSrc = audioEl ? audioEl.getAttribute('src') : '';
+                            if (audioSrc && audioSrc.startsWith('/')) {
+                                audioSrc = url + audioSrc;
+                            }
 
-                        postContent.innerHTML = correctedHtml;
-                        // --- FIX END ---
+                            // Create NEW Clean Structure
+                            const wrapper = document.createElement('div');
+                            wrapper.className = 'my-12'; // The Gap
+
+                            const titleDiv = document.createElement('div');
+                            titleDiv.className = 'font-bold text-white mb-2 text-lg'; // Title Styling
+                            titleDiv.textContent = titleText;
+
+                            const newAudio = document.createElement('audio');
+                            newAudio.controls = true;
+                            newAudio.style.width = '100%';
+                            newAudio.src = audioSrc;
+
+                            // Assemble
+                            wrapper.appendChild(titleDiv);
+                            wrapper.appendChild(newAudio);
+
+                            // Replace the messy Ghost card with our clean wrapper
+                            card.replaceWith(wrapper);
+                        });
+
+                        // Inject clean HTML
+                        postContent.innerHTML = doc.body.innerHTML;
                         
                     } else {
                         postHeader.innerHTML = '<h1>404 :: Post Not Found</h1>';
                     }
                 })
                 .catch(err => {
-                    console.error('Error loading post:', err);
+                    console.error('Error:', err);
                     postHeader.innerHTML = '<h1>Error :: Could not load post</h1>';
                 });
         } else {
