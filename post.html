@@ -70,6 +70,21 @@
             margin-bottom: 2em;
             border-radius: 0.5rem;
         }
+
+        /* --- ADDED: DARK MODE PLAYER STYLES --- */
+        video, audio {
+            /* 1. Force the browser's native controls to use the Dark theme */
+            color-scheme: dark;
+            
+            /* 2. Make the empty player background 'grey-ish' (#333 fits your #1a1a1a bg) */
+            background-color: #333333; 
+            
+            /* Optional: Smooth out the corners */
+            border-radius: 8px;
+            
+            /* Ensure it fits your container */
+            max-width: 100%;
+        }
     </style>
 
 </head>
@@ -173,7 +188,7 @@
 
                             const newAudio = document.createElement('audio');
                             newAudio.controls = true;
-                            newAudio.className = 'post-audio-player'; // Added class for easier selection later
+                            newAudio.className = 'post-audio-player'; 
                             newAudio.style.width = '100%';
                             newAudio.src = audioSrc;
 
@@ -189,7 +204,6 @@
                         postContent.innerHTML = doc.body.innerHTML;
 
                         // 4. ENABLE AUTO-PLAY NEXT (Album Mode)
-                        // We must select them AFTER they are injected into the DOM
                         const audioPlayers = postContent.querySelectorAll('audio');
                         
                         audioPlayers.forEach((player, index) => {
@@ -213,6 +227,22 @@
         } else {
             postHeader.innerHTML = '<h1>Error :: No Post Specified</h1>';
         }
+
+        /* --- ADDED: GLOBAL SINGLE PLAYBACK LISTENER --- */
+        // This watches the entire document. If ANY video/audio starts playing,
+        // it finds all others and pauses them.
+        document.addEventListener('play', function(e) {
+            // Check if the event came from a media element
+            if(e.target.tagName === 'AUDIO' || e.target.tagName === 'VIDEO'){
+                const allMedia = document.querySelectorAll('video, audio');
+                allMedia.forEach(media => {
+                    // Pause everything except the one that just started
+                    if (media !== e.target) {
+                        media.pause();
+                    }
+                });
+            }
+        }, true); // 'true' uses event capturing, which is required for play events
     </script>
 </body>
 </html>
