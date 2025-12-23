@@ -3,85 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seamless Player</title>
-    <style>
-        /* --- 1. Global Variables & Dark Mode Support --- */
-        :root {
-            /* Default Light Mode */
-            --bg-color: #ffffff;
-            --text-color: #333333;
-        }
+    <title>Loading...</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style type="text/tailwindcss">
+        @import url('https://unpkg.com/@tailwindcss/typography@0.5.13/src/index.css');
+    </style>
 
-        /* Check if user prefers dark mode */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-color: #121212; /* Deep dark grey/black */
-                --text-color: #e0e0e0;
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['"Roboto Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'szczur-bg': '#1a1a1a',
+                        'szczur-text': '#d1d1d1',
+                        'szczur-light': '#999999',
+                        'szczur-accent': '#ff4757',
+                    },
+                    typography: ({ theme }) => ({
+                        invert: {
+                            css: {
+                                '--tw-prose-body': theme('colors.szczur-text'),
+                                '--tw-prose-headings': theme('colors.white'),
+                                '--tw-prose-links': theme('colors.szczur-accent'),
+                                '--tw-prose-bold': theme('colors.white'),
+                                '--tw-prose-code': theme('colors.szczur-text'),
+                                '--tw-prose-pre-bg': theme('colors.black'),
+                                '--tw-prose-quotes': theme('colors.white'),
+                                '--tw-prose-quote-borders': theme('colors.szczur-accent'),
+                                'blockquote p:first-of-type::before': { content: 'none' },
+                                'blockquote p:last-of-type::after': { content: 'none' },
+                            },
+                        },
+                    }),
+                }
             }
         }
-
-        /* --- 2. Page Reset --- */
-        body {
-            margin: 0;
-            padding: 2rem;
-            font-family: system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-color); /* The page handles the color */
-            color: var(--text-color);
-            transition: background-color 0.3s ease;
+    </script>
+    
+    <style>
+        /* Base Prose Styles */
+        .prose {
+            font-size: 1rem;
+            line-height: 1.75;
+        }
+        .prose > * + * {
+            margin-top: 1.25em;
+        }
+        .prose h2, .prose h3 {
+            margin-top: 2em;
+        }
+        .prose blockquote {
+            border-left-width: 4px;
+            padding-left: 1rem;
+            font-size: 1.125em;
+            font-style: italic;
+            font-weight: 400;
+            color: #b0b0b0;
+        }
+        .prose .kg-image-card img {
+            width: 100%;
+            margin-top: 2em;
+            margin-bottom: 2em;
+            border-radius: 0.5rem;
         }
 
-        /* --- 3. The Player Frame --- */
-        .player-frame {
-            position: relative;
-            width: 100%;
-            max-width: 800px; /* Limits width on large screens */
-            margin: 0 auto;   /* Centers the player */
+        /* --- FIXED: TRANSPARENT DARK PLAYER --- */
+        video, audio {
+            /* 1. Force white controls (Play/Pause/Volume) */
+            color-scheme: dark;
             
-            /* CRITICAL CHANGE: No background color here. */
-            background: transparent; 
-            
-            /* Modern aspect ratio (16:9) */
-            aspect-ratio: 16 / 9;
-            
-            /* Optional: Rounded corners for the content only */
-            border-radius: 12px;
-            overflow: hidden; 
-            
-            /* Remove shadows if you want a truly flat look, 
-               or keep a subtle one for depth */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        /* --- 4. The Player Content (Iframe/Video) --- */
-        .player-frame iframe,
-        .player-frame video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            
-            /* Ensure the element itself is transparent until content loads */
+            /* 2. Remove background and border for the 'floating' look */
             background-color: transparent; 
+            border: none;
+            outline: none;
+            
+            /* 3. Layout */
+            width: 100%;
+            max-width: 100%;
+            display: block;
+            margin-bottom: 1rem;
+        }
+    </style>
+
+</head>
+<body class="font-mono bg-szczur-bg text-szczur-text text-base leading-relaxed">
+
+    <header class="border-b border-gray-800 bg-szczur-bg">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+             <a href="/" class="text-2xl font-bold text-white hover:text-szczur-accent transition-colors duration-200 tracking-wider">szczurwiel</a>
+        </div>
+    </header>
+
+    <article class="max-w-4xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+        
+        <div id="feature-image-container"></div>
+
+        <header id="post-header" class="mt-8 text-center max-w-3xl mx-auto">
+            <h1 class="text-szczur-light">Loading...</h1>
+        </header>
+
+        <div id="post-content" class="prose prose-invert mt-12 max-w-3xl mx-auto"></div>
+    </article>
+    
+    <footer class="text-center py-8 text-szczur-light text-sm border-t border-gray-800 mt-8">
+        &copy; 2024 szczurwiel
+    </footer>
+
+    <script>
+        const url = 'https://tunneling-falcon.pikapod.net';
+        const key = '73b1cb569557becdcfc9d10018';
+        const postHeader = document.getElementById('post-header');
+        const featureImageContainer = document.getElementById('feature-image-container');
+        const postContent = document.getElementById('post-content');
+        const slug = new URLSearchParams(window.location.search).get('slug');
+
+        if (slug) {
+            const apiUrl = `${url}/ghost/api/content/posts/slug/${slug}/?key=${key}&formats=html`;
+            fetch(apiUrl)
+                .then(res => res.json())
+                .then(({ posts }) => {
+                    const post = posts[0];
+                    if (post) {
+                        document.title = `${post.title} - szczurwiel`;
+                        
+                        // 1. Feature Image
+                        if (post.feature_image) {
+                            featureImageContainer.innerHTML = `
+                                <img 
+                                    class="w-full rounded-lg shadow-lg" 
+                                    src="${post.feature_image}" 
+                                    alt="${post.feature_image_alt || post.title}" 
+                                />
+                            `;
+                        }
+                        
+                        // 2. Header Data
+                        const postDate = new Date(post.published_at).toLocaleDateString('en-US', {
+                            year: 'numeric', month: 'long', day: 'numeric'
+                        });
+                        
+                        postHeader.innerHTML = `
+                            <h1 class="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">${post.title}</h1>
+                            <div class="flex items-center justify-center space-x-4 text-szczur-light text-sm md:text-base">
+                                <span>by szczurwiel</span>
+                                <span class="text-gray-700">&middot;</span>
+                                <time datetime="${post.published_at}">${postDate}</time>
+                            </div>
+                        `;
+
+                        // 3. PROCESS CONTENT (Cleanup & Parsing)
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(post.html, 'text/html');
+
+                        // A. Fix Images
+                        doc.querySelectorAll('img').forEach(img => {
+                            const src = img.getAttribute('src');
+                            if (src && src.startsWith('/content/images/')) {
+                                img.setAttribute('src', url + src);
+                            }
+                        });
+
+                        // B. FIX AUDIO (Clean: Title -> Player -> Gap)
+                        doc.querySelectorAll('.kg-audio-card').forEach(card => {
+                            // Extract Title
+                            const titleEl = card.querySelector('.kg-audio-title');
+                            const titleText = titleEl ? titleEl.textContent : 'Audio Track';
+                            
+                            // Extract Audio URL
+                            const audioEl = card.querySelector('audio');
+                            let audioSrc = audioEl ? audioEl.getAttribute('src') : '';
+                            if (audioSrc && audioSrc.startsWith('/')) {
+                                audioSrc = url + audioSrc;
+                            }
+
+                            // Create NEW Clean Structure (Removed box styling here too)
+                            const wrapper = document.createElement('div');
+                            wrapper.className = 'my-8'; // Just vertical spacing, no bg/border
+
+                            const titleDiv = document.createElement('div');
+                            titleDiv.className = 'font-bold text-white mb-2 text-lg tracking-wide pl-1'; // Slight padding left for alignment
+                            titleDiv.textContent = titleText;
+
+                            const newAudio = document.createElement('audio');
+                            newAudio.controls = true;
+                            newAudio.className = 'post-audio-player'; 
+                            newAudio.src = audioSrc;
+
+                            // Assemble
+                            wrapper.appendChild(titleDiv);
+                            wrapper.appendChild(newAudio);
+
+                            // Replace Ghost card
+                            card.replaceWith(wrapper);
+                        });
+
+                        // Inject clean HTML
+                        postContent.innerHTML = doc.body.innerHTML;
+
+                        // 4. ENABLE AUTO-PLAY NEXT
+                        const audioPlayers = postContent.querySelectorAll('audio');
+                        audioPlayers.forEach((player, index) => {
+                            player.addEventListener('ended', () => {
+                                if (index + 1 < audioPlayers.length) {
+                                    const nextPlayer = audioPlayers[index + 1];
+                                    nextPlayer.play();
+                                }
+                            });
+                        });
+                        
+                    } else {
+                        postHeader.innerHTML = '<h1 class="text-4xl text-white">404 :: Post Not Found</h1>';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    postHeader.innerHTML = '<h1 class="text-4xl text-white">Error :: Could not load post</h1>';
+                });
+        } else {
+            postHeader.innerHTML = '<h1 class="text-4xl text-white">Welcome</h1><p class="mt-4 text-szczur-light">Select a post to view.</p>';
         }
 
-        /* Just for demo purposes: Label styling */
-        h2 { text-align: center; font-weight: 300; }
-    </style>
-</head>
-<body>
-
-    <h2>Seamless Dark Mode Player</h2>
-
-    <div class="player-frame">
-        <iframe 
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=RELqYhJ-Xj_uXwXN" 
-            title="Video player" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowfullscreen>
-        </iframe>
-    </div>
-
+        /* --- GLOBAL PLAYBACK MANAGER --- */
+        document.addEventListener('play', function(e) {
+            if(e.target.tagName === 'AUDIO' || e.target.tagName === 'VIDEO'){
+                const allMedia = document.querySelectorAll('video, audio');
+                allMedia.forEach(media => {
+                    if (media !== e.target) {
+                        media.pause();
+                    }
+                });
+            }
+        }, true);
+    </script>
 </body>
 </html>
